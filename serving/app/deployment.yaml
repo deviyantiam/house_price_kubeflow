@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: house-price-pred-pvc
+  namespace: house-price-pred
+  labels:
+    app: house-price-pred
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: house-price-pred
+  namespace: house-price-pred
+  labels:
+    app: house-price-pred
+    env: development
+spec:
+  selector:
+    matchLabels:
+      app: house-price-pred
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: house-price-pred
+    spec:
+      containers:
+      - name: house-price-pred
+        image: username/house-price-pred:v1
+        resources:
+           requests:
+              cpu: "100m"
+              memory: "500Mi"
+           limits:
+              cpu: "300m"
+              memory: "800Mi"      
+        ports:
+        - containerPort: 8000
+          name: http-port
+        volumeMounts:
+        - name: house-price-pred-pv
+          mountPath: /root/
+        - name: tz-jakarta
+          mountPath: /etc/localtime
+      volumes:
+      - name: house-price-pred-pv
+        persistentVolumeClaim:
+          claimName: house-price-pred-pvc
+      - name: tz-jakarta
+        hostPath:
+          path: /usr/share/zoneinfo/Asia/Jakarta

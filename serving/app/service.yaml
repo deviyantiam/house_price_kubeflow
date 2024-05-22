@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: house-price-pred-service
+  namespace: house-price-pred
+spec:
+  selector:
+    app: house-price-pred
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
